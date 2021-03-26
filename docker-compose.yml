@@ -1,0 +1,38 @@
+version: "3"
+services:
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres-demo
+    volumes:
+      - ./createdb.sql:/docker-entrypoint-initdb.d/createdb.sql
+      - ./postgresql/data:/var/lib/postgresql/data
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    environment:
+      DATABASE_URL: pg://postgres:postgres@db:5432/postgres-demo
+    ports:
+      - "5000:5000"
+    volumes:
+      - /app/node_modules
+      - ./server/config:/app/config
+      - ./server/src:/app/src
+    depends_on:
+      - "db"
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    volumes:
+      - /app/node_modules
+      - ./client:/app

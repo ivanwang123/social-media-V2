@@ -56,7 +56,7 @@ const main = async () => {
   app.use(
     session({
       store: new pgStore({
-        conString: "pg://postgres:postgres@localhost:5432/postgres-demo",
+        conString: process.env.DATABASE_URL, // "pg://postgres:postgres@localhost:5432/postgres-demo",
       }),
       name: "qid",
       secret: "SESSION_SECRET_123",
